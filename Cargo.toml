@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+oauth2 = "4.4.2"
 reqwest = "0.12.5"
 strum = "0.26.3"
 strum_macros = "0.26.4"
