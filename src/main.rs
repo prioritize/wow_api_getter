@@ -1,7 +1,9 @@
 #![allow(dead_code)]
 mod blizz;
 mod creatures;
+mod error;
 mod oauth;
+mod wow;
 use blizz::utils::Region;
 use std::env;
 

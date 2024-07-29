@@ -1,16 +1,18 @@
-use std::io;
-
 use crate::blizz::utils::generate_region_hostname;
 use crate::blizz::utils::Languages;
 use crate::blizz::utils::Region;
+use crate::error::base_error::BaseError;
 use reqwest::RequestBuilder;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct CreatureSearchResponse {
     page: u32,
+    #[serde(alias = "pageSize")]
     page_size: u32,
+    #[serde(alias = "maxPageSize")]
     max_page_size: u32,
+    #[serde(alias = "pageCount")]
     page_count: u32,
     results: Vec<CreatureObject>,
 }
@@ -21,16 +23,18 @@ pub struct CreatureObject {
 }
 #[derive(Deserialize)]
 pub struct CreatureData {
-    creature_displays: Vec<u32>,
+    creature_displays: Vec<CreatureDisplay>,
     is_tameable: bool,
     name: Name,
-    id: Id,
+    id: u32,
+    #[serde(alias = "type")]
     kind: CreatureKind,
-    family: CreatureFamily,
+    family: Option<CreatureFamily>,
 }
 #[derive(Deserialize)]
 pub struct CreatureDisplay {
-    id: Vec<Id>,
+    key: Option<Key>,
+    id: u32,
 }
 #[derive(Deserialize)]
 pub struct Id {
@@ -39,29 +43,29 @@ pub struct Id {
 #[derive(Deserialize)]
 pub struct Name {
     #[serde(alias = "it_IT")]
-    it: String,
+    it: Option<String>,
     #[serde(alias = "ru_RU")]
-    ru: String,
+    ru: Option<String>,
     #[serde(alias = "en_GB")]
-    gb: String,
+    gb: Option<String>,
     #[serde(alias = "zh_TW")]
-    tw: String,
+    tw: Option<String>,
     #[serde(alias = "ko_KR")]
-    kr: String,
+    kr: Option<String>,
     #[serde(alias = "en_US")]
-    us: String,
+    us: Option<String>,
     #[serde(alias = "es_MX")]
-    mx: String,
+    mx: Option<String>,
     #[serde(alias = "pt_BR")]
-    br: String,
+    br: Option<String>,
     #[serde(alias = "es_ES")]
-    es: String,
+    es: Option<String>,
     #[serde(alias = "zh_CN")]
-    cn: String,
+    cn: Option<String>,
     #[serde(alias = "fr_FR")]
-    fr: String,
+    fr: Option<String>,
     #[serde(alias = "de_DE")]
-    de: String,
+    de: Option<String>,
 }
 #[derive(Deserialize)]
 pub struct CreatureKind {
@@ -77,11 +81,54 @@ pub struct CreatureFamily {
 pub struct Key {
     href: String,
 }
+#[derive(Deserialize)]
+pub struct Creature {
+    href: String,
+}
+#[derive(Deserialize)]
+pub struct Links {
+    href: String,
+}
+
+pub fn get_creature_image() {}
 pub fn get_creature_family_index() {}
 pub fn get_creature_family() {}
 pub fn get_creature_type_index() {}
 pub fn get_creature_type() {}
-pub fn get_creature() {}
+pub async fn get_creature() {}
+//     client: Client,
+//     token: String,
+//     id: u32,
+//     namespace: &str,
+//     region: Region,
+//     locale: String,
+// ) -> Result<Creature, BaseError> {
+//     let mut base_url = generate_region_hostname(region);
+//     base_url.push_str(&format!("/data/wow/creature/{id}"));
+//     let request = client
+//         .get(base_url)
+//         .query(&[("namespace", namespace)])
+//         .bearer_auth(token);
+//     match request.send().await {
+//         Ok(res) => match res.text().await {
+//             Ok(t) => match serde_json::from_str(&t) {
+//                 Ok(creature_response) => Ok(creature_response),
+//                 Err(e) => {
+//                     println!("{:?}", e);
+//                     Err(BaseError::UnableToParseJson)
+//                 }
+//             },
+//             Err(e) => {
+//                 println!("{:?}", e);
+//                 Err(BaseError::UnableToGetText)
+//             }
+//         },
+//         Err(e) => {
+//             println!("{:?}", e);
+//             Err(BaseError::ServiceUnavailable)
+//         }
+//     }
+// }
 pub async fn get_creature_search(
     client: reqwest::Client,
     token: String,
@@ -90,7 +137,7 @@ pub async fn get_creature_search(
     namespace: &str,
     order_by: &str,
     page: &str,
-) -> Result<CreatureSearchResponse, io::Error> {
+) -> Result<CreatureSearchResponse, BaseError> {
     let mut base_url = generate_region_hostname(region);
     base_url.push_str("/data/wow/search/creature");
     let request = client
@@ -102,16 +149,25 @@ pub async fn get_creature_search(
             ("_page", page),
         ])
         .bearer_auth(token);
-    let res = request
-        .send()
-        .await
-        .unwrap()
-        .json::<CreatureSearchResponse>()
-        .await
-        .unwrap();
-    println!("{}", res.results.len());
-    //println!("Response code is {}", res.unwrap().status());
-    todo!()
+    match request.send().await {
+        Ok(res) => match res.text().await {
+            Ok(t) => match serde_json::from_str(&t) {
+                Ok(creature_response) => Ok(creature_response),
+                Err(e) => {
+                    println!("{:?}", e);
+                    Err(BaseError::UnableToParseJson)
+                }
+            },
+            Err(e) => {
+                println!("{:?}", e);
+                Err(BaseError::UnableToGetText)
+            }
+        },
+        Err(e) => {
+            println!("{:?}", e);
+            Err(BaseError::ServiceUnavailable)
+        }
+    }
 }
 pub fn get_creature_display_media() {}
 
@@ -126,7 +182,29 @@ mod tests {
     async fn test_get_creature_search() {
         let token = get_access_token(Region::US).await.unwrap();
         let client = reqwest::Client::new();
-        let response =
-            get_creature_search(client, token, Region::US, "Dragon", "static-us", "id", "1").await;
+        match get_creature_search(client, token, Region::US, "Dragon", "static-us", "id", "1").await
+        {
+            Ok(_) => {
+                assert_eq!(true, true)
+            }
+            Err(_) => {
+                assert_eq!(false, true)
+            }
+        }
     }
+    #[tokio::test]
+    async fn test_get_creature_images() {
+        let token = get_access_token(Region::US).await.unwrap();
+        let client = reqwest::Client::new();
+        match get_creature_search(client, token, Region::US, "Dragon", "static-us", "id", "1").await
+        {
+            Ok(search_response) => {
+                assert_eq!(true, true)
+            }
+            Err(_) => {
+                assert_eq!(false, true)
+            }
+        }
+    }
+    // async fn test_get
 }
