@@ -1,9 +1,37 @@
-use std::{env, fmt::Display};
+use std::fmt::Display;
 pub enum Region {
     US,
     EU,
     Korea,
     Taiwan,
+}
+pub enum Language {
+    Italian,
+    Russian,
+    BritishEnglish,
+    Taiwanese,
+    Korean,
+    USEnglish,
+    MXSpanish,
+    Portugese,
+    Spanish,
+    Chinese,
+    French,
+    German,
+}
+pub struct Languages {
+    it: String,
+    ru: String,
+    gb: String,
+    tw: String,
+    kr: String,
+    us: String,
+    mx: String,
+    br: String,
+    es: String,
+    cn: String,
+    fr: String,
+    de: String,
 }
 impl Display for Region {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -25,23 +53,29 @@ mod tests {
 
     #[test]
     fn print_us_hostname() {
-        assert_eq!("us.api.blizzard.com", generate_region_hostname(Region::US))
+        assert_eq!(
+            "https://us.api.blizzard.com",
+            generate_region_hostname(Region::US)
+        )
     }
     #[test]
     fn print_eu_hostname() {
-        assert_eq!("eu.api.blizzard.com", generate_region_hostname(Region::EU))
+        assert_eq!(
+            "https://eu.api.blizzard.com",
+            generate_region_hostname(Region::EU)
+        )
     }
     #[test]
     fn print_kr_hostname() {
         assert_eq!(
-            "kr.api.blizzard.com",
+            "https://kr.api.blizzard.com",
             generate_region_hostname(Region::Korea)
         )
     }
     #[test]
     fn print_tw_hostname() {
         assert_eq!(
-            "tw.api.blizzard.com",
+            "https://tw.api.blizzard.com",
             generate_region_hostname(Region::Taiwan)
         )
     }

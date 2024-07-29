@@ -5,6 +5,8 @@ edition = "2021"
 
 [dependencies]
 oauth2 = "4.4.2"
-reqwest = "0.12.5"
+reqwest = { version = "0.12.5", features = ["json"] }
+serde = { version = "1.0.204", features = ["derive"] }
 strum = "0.26.3"
 strum_macros = "0.26.4"
+tokio = { version = "1.39.2", features = ["full"] }
