@@ -43,7 +43,7 @@ impl Display for Region {
         }
     }
 }
-pub fn generate_region_hostname(region: Region) -> String {
+pub fn generate_region_hostname(region: &Region) -> String {
     region.to_string() + ".api.blizzard.com"
 }
 #[cfg(test)]
@@ -55,33 +55,33 @@ mod tests {
     fn print_us_hostname() {
         assert_eq!(
             "https://us.api.blizzard.com",
-            generate_region_hostname(Region::US)
+            generate_region_hostname(&Region::US)
         )
     }
     #[test]
     fn print_eu_hostname() {
         assert_eq!(
             "https://eu.api.blizzard.com",
-            generate_region_hostname(Region::EU)
+            generate_region_hostname(&Region::EU)
         )
     }
     #[test]
     fn print_kr_hostname() {
         assert_eq!(
             "https://kr.api.blizzard.com",
-            generate_region_hostname(Region::Korea)
+            generate_region_hostname(&Region::Korea)
         )
     }
     #[test]
     fn print_tw_hostname() {
         assert_eq!(
             "https://tw.api.blizzard.com",
-            generate_region_hostname(Region::Taiwan)
+            generate_region_hostname(&Region::Taiwan)
         )
     }
     #[test]
     fn get_token() {
-        let _ = get_access_token(Region::US);
+        let _ = get_access_token(&Region::US);
         assert_eq!(1 + 1, 2);
     }
 }

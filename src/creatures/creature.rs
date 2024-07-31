@@ -44,10 +44,36 @@ impl GDRequest for CreatureResponse {}
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::oauth::token;
+    use crate::blizz::utils::Region;
+    use crate::oauth::token::get_access_token;
     use crate::wow::game_data_request::GDRequest;
     use reqwest::Client;
-    fn test_get_creature() {
+
+    #[tokio::test]
+    async fn test_get_creature() {
         let client = Client::new();
+        let region = Region::US;
+        let token = get_access_token(&region).await.unwrap();
+
+        match CreatureResponse::get(
+            client,
+            token,
+            &region,
+            42722,
+            "static-us",
+            "en_US",
+            "creature",
+        )
+        .await
+        {
+            Ok(creature_response) => {
+                // let reqwest::get(creature_response.links.this.href)..await;
+                assert_eq!(0, 0);
+            }
+            Err(e) => {
+                println!("{:?}", e);
+                assert_eq!(0, 1);
+            }
+        }
     }
 }

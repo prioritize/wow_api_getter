@@ -132,7 +132,7 @@ pub async fn get_creature() {}
 pub async fn get_creature_search(
     client: reqwest::Client,
     token: String,
-    region: Region,
+    region: &Region,
     search_term: &str,
     namespace: &str,
     order_by: &str,
@@ -180,9 +180,10 @@ mod tests {
     use crate::oauth::token::get_access_token;
     #[tokio::test]
     async fn test_get_creature_search() {
-        let token = get_access_token(Region::US).await.unwrap();
+        let token = get_access_token(&Region::US).await.unwrap();
         let client = reqwest::Client::new();
-        match get_creature_search(client, token, Region::US, "Dragon", "static-us", "id", "1").await
+        match get_creature_search(client, token, &Region::US, "Dragon", "static-us", "id", "1")
+            .await
         {
             Ok(_) => {
                 assert_eq!(true, true)
@@ -194,9 +195,10 @@ mod tests {
     }
     #[tokio::test]
     async fn test_get_creature_images() {
-        let token = get_access_token(Region::US).await.unwrap();
+        let token = get_access_token(&Region::US).await.unwrap();
         let client = reqwest::Client::new();
-        match get_creature_search(client, token, Region::US, "Dragon", "static-us", "id", "1").await
+        match get_creature_search(client, token, &Region::US, "Dragon", "static-us", "id", "1")
+            .await
         {
             Ok(search_response) => {
                 assert_eq!(true, true)

@@ -5,7 +5,7 @@ use oauth2::reqwest::http_client;
 use oauth2::TokenResponse;
 use oauth2::{basic::BasicClient, AuthUrl, ClientId, ClientSecret, RedirectUrl, Scope, TokenUrl};
 use std::env;
-pub async fn get_access_token(region: Region) -> Result<String, oauth2::url::ParseError> {
+pub async fn get_access_token(region: &Region) -> Result<String, oauth2::url::ParseError> {
     let client_id = env::var("BZ_CLIENT_ID").expect("Unable to find BZ_CLIENT_ID");
     let client_secret = env::var("BZ_API_KEY").expect("Unable to find BZ_API_KEY");
     let auth_url = generate_region_hostname(region);

@@ -9,18 +9,18 @@ pub trait GDRequest {
     async fn get(
         client: Client,
         token: String,
-        region: Region,
+        region: &Region,
         id: u32,
-        namespace: String,
-        locale: String,
+        namespace: &str,
+        locale: &str,
         kind: &str,
     ) -> Result<Self, BaseError>
     where
-        T: for<'de> Deserialize<'de>,
         Self: Sized + for<'de> Deserialize<'de>,
     {
-        let url = generate_region_hostname(region);
+        let url = generate_region_hostname(&region);
         let url = format!("{url}/{kind}/{id}");
+        println!("{}", &url);
         match client
             .get(url)
             .query(&[("namespace", namespace), ("locale", locale)])

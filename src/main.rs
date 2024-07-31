@@ -11,7 +11,7 @@ use std::env;
 async fn main() {
     let site_client_id = env::var("BZ_CLIENT_ID").unwrap();
     let site_secret = env::var("BZ_API_KEY").unwrap();
-    let token = oauth::token::get_access_token(Region::US).await;
+    let token = oauth::token::get_access_token(&Region::US).await;
     println!("{:?}", token);
 
     println!("{}", site_client_id);
