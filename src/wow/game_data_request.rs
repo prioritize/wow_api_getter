@@ -8,7 +8,7 @@ use serde::Deserialize;
 pub trait GDRequest {
     async fn get(
         client: Client,
-        token: String,
+        token: &str,
         region: &Region,
         id: u32,
         namespace: &str,
@@ -19,7 +19,7 @@ pub trait GDRequest {
         Self: Sized + for<'de> Deserialize<'de>,
     {
         let url = generate_region_hostname(&region);
-        let url = format!("{url}/{kind}/{id}");
+        let url = format!("{url}/data/wow/{kind}/{id}");
         println!("{}", &url);
         match client
             .get(url)
@@ -29,10 +29,22 @@ pub trait GDRequest {
             .await
         {
             Ok(response) => match response.status() {
-                StatusCode::OK => match response.json().await {
-                    Ok(parsed) => Ok(parsed),
-                    Err(_) => Err(BaseError::UnableToParseJson),
-                },
+                StatusCode::OK => {
+                    let text = response.text().await.unwrap();
+                    println!("{}", text);
+                    match serde_json::from_str(&text) {
+                        Ok(parsed) => Ok(parsed),
+                        Err(e) => {
+                            println!("{:?}", e);
+                            Err(BaseError::UnableToParseJson)
+                        }
+                    }
+                }
+                // match response.json().await {
+                //     Ok(parsed) => Ok(parsed),
+                //     Err(_) => Err(BaseError::UnableToParseJson),
+                // },
+                StatusCode::NOT_FOUND => Err(BaseError::NotFound),
                 _ => Err(BaseError::ServiceUnavailable),
             },
             Err(_) => todo!(),
