@@ -1,7 +1,10 @@
 #![allow(dead_code)]
+mod ah;
 mod blizz;
+mod connected_realm;
 mod creatures;
 mod error;
+mod items;
 mod oauth;
 mod wow;
 use crate::creatures::creature::CreatureResponse;
