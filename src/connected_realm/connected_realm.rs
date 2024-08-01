@@ -1,0 +1,2 @@
+#[derive(Deserialize)]
+struct ConnectedRealmIndex {}
