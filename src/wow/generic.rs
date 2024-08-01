@@ -2,5 +2,9 @@ use serde::Deserialize;
 #[derive(Deserialize)]
 pub struct Links {
     #[serde(alias = "self")]
-    this: Key,
+    self_link: Key,
+}
+#[derive(Deserialize)]
+pub struct Key {
+    pub href: String,
 }
